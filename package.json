@@ -1,0 +1,13 @@
+{
+  "name": "blog-cli",
+  "version": "1.0.0",
+  "description": "CLI to publish markdown articles to Dev.to with versioned snapshots in Supabase",
+  "type": "module",
+  "bin": {
+    "blog": "./bin/blog.mjs"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "postgres": "^3.4.8"
+  }
+}
