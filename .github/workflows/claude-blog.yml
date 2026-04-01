@@ -1,0 +1,40 @@
+name: Claude Blog Operations
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, edited]
+
+jobs:
+  claude-blog:
+    if: contains(github.event.comment.body, '@claude') || (github.event_name == 'issues' && (contains(github.event.issue.title, 'Blog post:') || contains(github.event.issue.title, 'Edit blog:') || contains(github.event.issue.title, 'Remove from blog:')))
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Doppler CLI
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+
+      - name: Claude Blog Operations
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_BASE_URL: "https://openrouter.ai/api/v1"
+          ANTHROPIC_API_KEY: ${{ env.OPENROUTER_API_KEY }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          anthropic_api_key: ${{ env.OPENROUTER_API_KEY }}
+          claude_args: |
+            --max-turns 5
+            --model anthropic/claude-3-5-sonnet-20241022
+            --system-prompt "You are a specialized blogger agent. Analyze the issue context to determine if this is a blog creation, editing, or content removal task. Use the blogging skills and follow the project guidelines in CLAUDE.md."
