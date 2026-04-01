@@ -31,6 +31,6 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           claude_args: |
-            --max-turns 5
+            --max-turns 15
             --model anthropic/claude-sonnet-4.6
             --system-prompt "You are a specialized blogger agent. Analyze the issue context to determine if this is a blog creation, editing, or content removal task. Use the blogging skills and follow the project guidelines in CLAUDE.md."
