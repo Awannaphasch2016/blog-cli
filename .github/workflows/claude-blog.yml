@@ -15,25 +15,21 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
+      id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Doppler CLI
-        uses: dopplerhq/cli-action@v3
-        with:
-          doppler-token: ${{ secrets.DOPPLER_TOKEN }}
-
       - name: Claude Blog Operations
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_BASE_URL: "https://openrouter.ai/api/v1"
-          ANTHROPIC_API_KEY: ${{ env.OPENROUTER_API_KEY }}
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEV_IO_API_TOKEN: ${{ secrets.DEV_IO_API_TOKEN }}
         with:
-          anthropic_api_key: ${{ env.OPENROUTER_API_KEY }}
+          anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           claude_args: |
             --max-turns 5
             --model anthropic/claude-3-5-sonnet-20241022
