@@ -24,7 +24,7 @@ jobs:
       - name: Claude Blog Operations
         uses: anthropics/claude-code-action@v1
         env:
-          ANTHROPIC_BASE_URL: "https://openrouter.ai/api/v1"
+          ANTHROPIC_BASE_URL: "https://openrouter.ai/api"
           ANTHROPIC_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEV_IO_API_TOKEN: ${{ secrets.DEV_IO_API_TOKEN }}
@@ -32,4 +32,5 @@ jobs:
           anthropic_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           claude_args: |
             --max-turns 5
+            --model anthropic/claude-sonnet-4.6
             --system-prompt "You are a specialized blogger agent. Analyze the issue context to determine if this is a blog creation, editing, or content removal task. Use the blogging skills and follow the project guidelines in CLAUDE.md."
