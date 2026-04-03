@@ -13,7 +13,9 @@ Not once. Not even an attempt.
 
 Every task log showed the same pattern: `stop=end_turn, tools=none`. The model would reason, sometimes partially, and give up — never reaching for the tools sitting right in front of it. Final accuracy: 11%, driven entirely by a single Fibonacci calculation it happened to solve through direct reasoning.
 
-That result sent us down a rabbit hole. We started pulling data from the Berkeley Function Calling Leaderboard, comparing notes with other teams, and piecing together what's really happening when small models face tool-calling scenarios. What we found reshapes how you should think about model selection for any agentic application.
+Before we get into the data, take a moment to notice your own assumption here. Most people, hearing "we hooked a language model up to a set of tools," expect some level of tool use — even imperfect, even clumsy. You might already be wondering whether we set the tools up correctly, or whether the prompts were clear enough. That's a natural reaction. And it turns out to be the more interesting question.
+
+What we found reshapes how you should think about model selection for any agentic application.
 
 ---
 
@@ -27,7 +29,7 @@ Our evaluation used a standard ReAct (Reasoning + Acting) agent architecture —
 
 The model under test: **Llama 3B**, Meta's smallest production-ready language model.
 
-The expectation: even if Llama 3B struggled with harder tasks, it should at least attempt tool use on the easier ones. Calculate something. Look something up. Show its work.
+The expectation was reasonable: even if Llama 3B struggled with harder tasks, it should at least attempt tool use on the easier ones. Calculate something. Look something up. Show its work.
 
 What we got instead was silence.
 
@@ -47,7 +49,9 @@ Answer: AAPL is trading at approximately $185, which represents a slight change 
 [stop=end_turn, tools=none]
 ```
 
-The model *knew* it needed information it didn't have. It *acknowledged* uncertainty. And then it confabulated an answer rather than using the search tool available to it.
+The model *knew* it needed information it didn't have. It *acknowledged* uncertainty in its internal reasoning trace. And then it confabulated an answer rather than using the search tool available to it.
+
+This is the moment the "setup problem" hypothesis starts to unravel. The tools were there. The model's reasoning trace showed it recognized the need for external data. The connection between "I need this information" and "I have a tool that can get it" simply never fired.
 
 This happened across all nine tasks. The only success was Fibonacci — a pure mathematical computation requiring no external data:
 
@@ -61,15 +65,27 @@ Answer: The 15th Fibonacci number is 610.
 [stop=end_turn, tools=none]
 ```
 
-Correct. No tools needed. And conveniently, the one scenario where no tools were needed.
+Correct. No tools needed. And the one scenario where no tools were needed was the one scenario the model succeeded at.
 
 **Final results: 1 out of 9 tasks successful. 11% accuracy. Zero tool invocations.**
 
 ---
 
+## Reframing What "Failure" Means Here
+
+Before diving into the data, it's worth being precise about what we mean. When a model fails to call a tool, we're not watching a model that tried and got the parameters wrong. We're watching a model that didn't try.
+
+Think about what that means architecturally. A language model trained on internet text has seen billions of examples of a single pattern: *here's a question → here's an answer*. The model's entire training compressed that pattern into weights. Tool use requires interrupting it: *here's a question → assess what I don't know → identify a relevant tool → construct a valid call → wait for the result → integrate it → now answer*.
+
+That detour is long. And for a small model, the pull toward the short path is powerful enough to override the tools entirely.
+
+This isn't a bug in Llama 3B. It's a window into what small model capability actually looks like.
+
+---
+
 ## The Four-Tier Tool Calling Framework
 
-We're not the only ones who've noticed this. The Berkeley Function Calling Leaderboard has been systematically evaluating tool-calling capabilities since 2024, and the data tells a clear story. Models cluster into four distinct performance tiers:
+We're not the only ones who've noticed this pattern. The Berkeley Function Calling Leaderboard has been systematically evaluating tool-calling capabilities since 2024, and the data tells a clear story. Models cluster into four distinct performance tiers:
 
 ### Tier 1: Elite Production-Ready (85–95% success)
 
@@ -96,7 +112,7 @@ Capable models that handle most tool-calling scenarios correctly. Occasional fai
 |-------|---------------------|
 | Llama 3 70B | ~58% |
 
-The 70B model can call tools — sometimes. But the inconsistency is the problem. You can't build reliable pipelines on a model that succeeds 58% of the time without knowing which 58%. Failures cluster around complex schemas, ambiguous parameter requirements, and multi-tool scenarios.
+The 70B model can call tools — sometimes. But the inconsistency is the problem. You can't build reliable pipelines on a model that succeeds 58% of the time without knowing *which* 58%. Failures cluster around complex schemas, ambiguous parameter requirements, and multi-tool scenarios.
 
 ### Tier 4: Fundamentally Broken (20–50% — or zero)
 
@@ -106,6 +122,8 @@ The 70B model can call tools — sometimes. But the inconsistency is the problem
 | Other sub-7B models | 20–35% |
 
 Here's where our benchmark result fits. Sub-7B models don't just perform poorly at tool calling — many of them effectively cannot do it at all. The capability isn't underdeveloped; it's absent.
+
+Notice what this four-tier structure is telling you: tool-calling capability doesn't scale linearly with model size. There's a cliff somewhere around 7 billion parameters. Below it, you're not getting "less tool calling" — you're getting "essentially no tool calling." Above it, the capability emerges.
 
 ---
 
@@ -117,19 +135,19 @@ The "tools=none" pattern isn't random failure. It's a window into what's actuall
 
 Recognizing when a tool is needed requires a kind of meta-cognition: the model has to evaluate its own knowledge gaps, assess whether a tool could fill them, and weigh that option against direct response. For large models, this happens implicitly. For small models, the working memory required to maintain both the task context *and* the tool-evaluation frame simultaneously appears to exceed capacity.
 
-Llama 3B can recognize what question it's being asked. It struggles to simultaneously track "what do I not know?" and "what tools could address that gap?"
+Llama 3B can recognize what question it's being asked. It struggles to simultaneously track "what do I not know?" and "what tools could address that gap?" as parallel analytical threads.
 
 ### 2. Poor Parameter Generation (≈30% capability)
 
 Even when a small model recognizes it should use a tool, forming a valid tool call requires generating a structured output — usually a JSON object with correct keys, value types, and nested structures — that matches the function signature. This is a different skill from natural language generation, and it's one that small models handle poorly.
 
-The result: even the rare cases where a small model attempts a tool call often produce malformed parameters that cause the tool to fail. The model then defaults to direct response as a fallback.
+The result: even the rare cases where a small model attempts a tool call often produce malformed parameters that cause the tool to fail. The model then defaults to direct response as a fallback — completing the task, just badly.
 
 ### 3. Training Bias Toward Direct Generation
 
 Large language models are trained primarily on text — and the overwhelming pattern in text is: question → answer, prompt → completion. Tool use requires interrupting that pattern: question → assess → invoke → wait → integrate → answer. The detour is long, and models trained on billions of examples of direct completion have a powerful prior pushing them toward the short path.
 
-Large models appear to overcome this prior through sheer representational capacity. Small models don't have enough headroom.
+Large models appear to overcome this prior through sheer representational capacity. Small models don't have enough headroom. When the short path (direct generation) and the correct path (tool invocation) compete, the short path wins.
 
 ---
 
@@ -139,15 +157,17 @@ Here's where the story gets interesting — and where a lot of teams make expens
 
 When we saw the baseline ReAct results, we tried something reasonable: add a routing layer. The idea was to give the model a simpler first decision — "do I need tools at all? If so, which type?" — before asking it to execute tool calls. Decompose the hard problem into easier steps.
 
+You can see the logic. If the model is failing because the full tool-calling task is too complex, simplify the first step. Route first. Execute second. Seem reasonable?
+
 The result: **0% accuracy**. Worse than the baseline.
 
-The routing agent confused Llama 3B further. More complex prompts with conditional branching, category selection, and multi-stage reasoning exceeded its capacity even more than the straightforward ReAct setup. The model couldn't hold the routing logic in context while also tracking the task.
+The routing agent confused Llama 3B further. More complex prompts with conditional branching, category selection, and multi-stage reasoning exceeded its capacity even more than the straightforward ReAct setup. The model couldn't hold the routing logic in context while also tracking the task. We had made the problem harder by trying to make it easier.
 
-This is the architecture trap: **when you're working with a model that lacks fundamental capability, architectural sophistication makes things worse, not better.**
+This is the architecture trap: **when you're working with a model that lacks fundamental capability, architectural sophistication makes things worse, not better.** It's not that routing is bad. It's that routing assumes a model capable of following it. Llama 3B couldn't follow either the baseline or the enhanced version. The bottleneck was never the architecture.
 
-The lesson isn't that routing agents are bad. The lesson is that routing agents assume a model capable of following them. Llama 3B couldn't follow either the baseline or the enhanced version. The bottleneck was never the architecture.
+> Model capability trumps architectural sophistication. Complexity is not a substitue for capability.
 
-> Model capability trumps architectural sophistication. Match complexity to capability.
+This should shift how you think about framework choices in agentic systems. The most powerful agent frameworks in the world — LangChain, LlamaIndex, AutoGen, CrewAI — are layers on top of model behavior. They amplify what's there. They cannot manufacture what isn't.
 
 ---
 
@@ -166,6 +186,8 @@ This isn't about 7B being a magic number. It's about the minimum representationa
 
 Sub-7B models can't do all of these things at once. They sacrifice one or more steps — and the step they most reliably sacrifice is the tool invocation itself.
 
+Think of it like juggling. A beginner can keep one ball in the air. Two is hard. Three is unreliable. Tool calling requires five cognitive tasks running in parallel. Small models drop one before they start.
+
 ---
 
 ## The Real Cost of Broken Tool Calling
@@ -174,11 +196,15 @@ There's a tempting budget argument for small models: they're cheaper to run, the
 
 The problem is the failure mode.
 
-When Llama 3B fails at a task, it doesn't return an error. It returns a confident, plausible-sounding wrong answer. In our benchmark, it didn't say "I can't look up the current stock price." It said "AAPL is trading at approximately $185" — a number it invented. 
+When Llama 3B fails at a task, it doesn't return an error. It returns a confident, plausible-sounding wrong answer. In our benchmark, it didn't say "I can't look up the current stock price." It said "AAPL is trading at approximately $185" — a number it invented.
 
-In a production system, that failure is invisible until something downstream breaks. An error is debuggable. A confident hallucination is a liability.
+This is the distinction between *error* and *hallucination* — and it matters enormously for production systems.
 
-The cost calculation changes when you account for:
+An error is debuggable. When a tool call fails with an exception, you have a stack trace, a status code, a known point of failure. You can log it, retry it, flag it for review. The system knows something went wrong.
+
+A hallucination is invisible until something downstream breaks. A number in a database. A recommendation in a report. A decision made on false information. The system doesn't know anything went wrong because, from the system's perspective, nothing did — it got a response.
+
+In a production system, that failure is invisible until something downstream breaks. The cost calculation changes when you account for:
 - **Debug time** spent tracing failures to hallucinated tool responses
 - **Data quality** downstream of agents feeding incorrect outputs into pipelines
 - **User trust** eroded by an agent that confidently lies
@@ -204,7 +230,7 @@ Based on our benchmark and the broader leaderboard data, here's what we'd recomm
 
 This hybrid approach captures cost savings where small models can actually perform while not sacrificing reliability where they can't.
 
-**When in doubt, run your own benchmark.** General benchmarks are useful signals, but nothing replaces evaluating a model on your specific tools, your specific task distribution, and your actual failure cost profile.
+**When in doubt, run your own benchmark.** General benchmarks are useful signals, but nothing replaces evaluating a model on your specific tools, your specific task distribution, and your actual failure cost profile. A model that performs well on Berkeley leaderboard tasks may fail on your specialized API schemas. The only way to know is to test.
 
 ---
 
@@ -216,7 +242,9 @@ But the tooling can't paper over a model that can't follow it.
 
 The fundamental lesson from our Llama 3B benchmark is that agent architecture is downstream of model capability. The most elegant routing logic, the most carefully crafted prompts, the most sophisticated fallback chains — none of it helps if the model can't execute the basic action of recognizing that a tool exists and calling it.
 
-The "tools=none" logs are clarifying. They cut through all the architectural complexity and say: this model is not an agent. It's a text generator that was asked to be an agent and politely declined the job.
+The "tools=none" logs are clarifying. They cut through all the architectural complexity and say: *this model is not an agent*. It's a text generator that was asked to be an agent and politely declined the job.
+
+Here's the insight worth carrying forward: **tool calling isn't just a feature you can add to any model with the right framework**. It's an emergent capability that requires sufficient representational capacity to exist at all. The four-tier framework isn't describing degrees of the same capability — it's describing qualitatively different things. Tier 1 models and Tier 4 models are not doing the same task with different accuracy. Tier 4 models aren't doing the task.
 
 Knowing that early — before you've built pipelines, written integrations, and promised stakeholders reliable outputs — is worth more than any benchmark number.
 
@@ -232,6 +260,7 @@ Knowing that early — before you've built pipelines, written integrations, and 
 - Adding architectural complexity (routing agents) made Llama 3B **worse**, not better
 - Failed workflows with confident hallucinations cost more than higher API fees
 - **Test tool calling explicitly** — don't assume general benchmark performance predicts it
+- Tool calling is an **emergent capability** — below the threshold, you don't get less of it, you get none of it
 
 If you're evaluating models for agent applications: run tool-calling benchmarks specific to your use case. The capability gap between small and large models isn't a matter of degree. It's a matter of kind.
 
