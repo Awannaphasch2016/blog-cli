@@ -102,9 +102,7 @@ The Argumentative Agora is the loudest district. The debates never stop. Everyon
 
 Argumentative writing answers the question: *Why should you believe this?*
 
-But here's the trap that first-time visitors fall into: they think the Agora is about *winning*. It isn't. It's about *convincing*. Those are different goals that require different strategies.
-
-Winning means being right. Convincing means being understood and trusted.
+But here's the trap that first-time visitors fall into: they think the Agora is about *winning*. It isn't. It's about *convincing* — being understood and trusted, not just being right.
 
 The architecture of a good argument has three visible pillars:
 
@@ -168,15 +166,9 @@ All possible details
 
 ## Part III: The Hidden Truth — Districts Aren't Islands
 
-Here's what the map doesn't show you: the districts bleed into each other.
+Here's what the map doesn't show you: the districts bleed into each other. Every great memoir is part Narrative, part Descriptive, part Argumentative. Every good science explainer uses Narrative to carry you through the Expository material. Every persuasive essay leans on Description to make you *feel* the reality it's trying to convince you about.
 
-Every great memoir is part Narrative, part Descriptive, part Argumentative. Every good science explainer uses Narrative to carry you through the Expository material. Every persuasive essay leans on Description to make you *feel* the reality it's trying to convince you about.
-
-The four styles aren't competing. They're collaborating.
-
-Think of a piece of writing you love. Not a textbook — something you actually chose to read. Ask yourself: which district does it live in?
-
-You'll find the answer is always: *more than one*.
+Think of a piece of writing you love — not a textbook, something you actually chose to read — and ask: which district does it live in? The answer is always *more than one*.
 
 ---
 
@@ -207,9 +199,6 @@ Here's the full picture — a map of how the styles relate, not just to each oth
     │                 MEDIUM ✦                           │
     └───────────────────────────────────────────────────┘
 
-    Energy flows: ═══════►
-    Tension lines: ← - - →
-    Evolution: ────────►
 ```
 
 Notice what's on the outside of the four styles:
@@ -223,19 +212,9 @@ These four forces determine which style — or combination of styles — belongs
 
 ---
 
-## Part V: The Story of Style
+## Part V: One City
 
-**In the beginning**, there were four ways to use words.
-
-To tell what happened — *Narrative*. The storytellers became novelists, journalists, historians. They built the Narrative Quarter.
-
-To explain how things work — *Expository*. The explainers became teachers and technical writers. They built the Expository Hub.
-
-To convince others — *Argumentative*. The persuaders became philosophers, lawyers, and essayists. They built the Argumentative Agora.
-
-To show what things are like — *Descriptive*. The observers became poets, nature writers, and the architects of every other style. They built the Descriptive Gallery.
-
-And then the writers discovered what the city planners had always known: *no district survives without the others*. The Agora needs the Gallery to make its arguments felt. The Hub needs the Quarter to make its explanations memorable. The Quarter needs the Gallery to make its world real. The Gallery needs the Agora to make its observations matter.
+The writers eventually discovered what the city planners had always known: *no district survives without the others*. The Agora needs the Gallery to make its arguments felt. The Hub needs the Quarter to make its explanations memorable. The Quarter needs the Gallery to make its world real. The Gallery needs the Agora to make its observations matter.
 
 The city is always, and has always been, one city.
 
