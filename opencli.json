@@ -1,0 +1,59 @@
+{
+  "name": "blog",
+  "description": "CLI to publish markdown articles to Dev.to with versioned snapshots in Supabase",
+  "version": "1.0.0",
+  "author": "CLI Team",
+  "repository": "https://github.com/blog-cli",
+  "bin": "./bin/blog.mjs",
+  "keywords": ["blog", "devto", "markdown", "publishing", "supabase"],
+  "categories": ["content", "publishing", "blog"],
+  "commands": {
+    "new": {
+      "description": "Create a new blog post draft",
+      "usage": "blog new <title> [options]",
+      "examples": [
+        {
+          "command": "blog new \"My First Post\" --tags javascript,tutorial",
+          "description": "Create a new post with tags"
+        }
+      ]
+    },
+    "publish": {
+      "description": "Publish a blog post to Dev.to",
+      "usage": "blog publish <file> [options]",
+      "examples": [
+        {
+          "command": "blog publish ./my-post.md --draft",
+          "description": "Publish as draft"
+        },
+        {
+          "command": "blog publish ./my-post.md --function v1",
+          "description": "Publish using serverless function"
+        }
+      ]
+    },
+    "list": {
+      "description": "List published articles",
+      "usage": "blog list [options]"
+    },
+    "status": {
+      "description": "Check publishing status",
+      "usage": "blog status [file]"
+    }
+  },
+  "installation": {
+    "method": "npm",
+    "package": "blog-cli",
+    "autoInstall": true
+  },
+  "ai_discovery": {
+    "categories": ["content creation", "publishing", "blogging"],
+    "tags": ["markdown", "dev.to", "blog", "cms"],
+    "use_cases": [
+      "Publishing technical articles",
+      "Managing blog content",
+      "Content versioning",
+      "Multi-platform publishing"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+service: blog-publisher
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    SUPABASE_URL: ${env:SUPABASE_URL}
+    SUPABASE_ANON_KEY: ${env:SUPABASE_ANON_KEY}
+    DEVTO_API_KEY: ${env:DEVTO_API_KEY}
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+
+functions:
+  publish-v1:
+    handler: functions/publish-v1.handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /blog/publish/v1
+          method: POST
+    environment:
+      FUNCTION_VERSION: v1
+
+  publish-v2:
+    handler: functions/publish-v2.handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - httpApi:
+          path: /blog/publish/v2
+          method: POST
+    environment:
+      FUNCTION_VERSION: v2
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3004
+    host: 0.0.0.0

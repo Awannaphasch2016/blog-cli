@@ -1,0 +1,33 @@
+{
+  "name": "blog-cli",
+  "version": "1.0.0",
+  "description": "CLI to publish markdown articles to Dev.to with versioned snapshots in Supabase",
+  "type": "module",
+  "bin": {
+    "blog": "./bin/blog.mjs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy",
+    "deploy:prod": "serverless deploy --stage prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "gray-matter": "^4.0.3",
+    "js-yaml": "^4.1.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-offline": "^13.3.2"
+  },
+  "keywords": [
+    "blog",
+    "devto",
+    "markdown",
+    "publishing",
+    "cli"
+  ],
+  "author": "CLI Team",
+  "license": "MIT"
+}

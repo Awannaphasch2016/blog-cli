@@ -1,0 +1,31 @@
+{
+  "name": "blog-lambda-functions",
+  "version": "1.0.0",
+  "description": "Serverless functions for blog operations",
+  "type": "module",
+  "main": "functions/publish-v1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy",
+    "deploy:prod": "serverless deploy --stage prod",
+    "invoke:local": "serverless invoke local -f publish-v1",
+    "logs": "serverless logs -f publish-v1 -t"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "gray-matter": "^4.0.3",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-offline": "^13.3.2"
+  },
+  "keywords": [
+    "serverless",
+    "lambda",
+    "blog",
+    "publishing"
+  ],
+  "author": "CLI Team",
+  "license": "MIT"
+}
