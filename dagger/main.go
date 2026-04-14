@@ -36,7 +36,7 @@ func (m *BlogCLI) BuildAndPush(ctx context.Context) (string, error) {
 		WithExec([]string{"apt-get", "update"}).
 		WithExec([]string{"apt-get", "install", "-y", "nodejs", "npm", "git", "curl"}).
 		WithExec([]string{"npm", "install", "-g", "@jackwener/opencli"}).
-		WithDirectory("/app", client.Host().Directory("../")).
+		WithDirectory("/app", client.Host().Directory(".")).
 		WithWorkdir("/app").
 		WithExec([]string{"npm", "install"}).
 		WithExec([]string{"npm", "link"})
@@ -90,7 +90,7 @@ func (m *BlogCLI) BuildLocal(ctx context.Context) (*dagger.Container, error) {
 		WithExec([]string{"apt-get", "update"}).
 		WithExec([]string{"apt-get", "install", "-y", "nodejs", "npm", "git", "curl"}).
 		WithExec([]string{"npm", "install", "-g", "@jackwener/opencli"}).
-		WithDirectory("/app", client.Host().Directory("../")).
+		WithDirectory("/app", client.Host().Directory(".")).
 		WithWorkdir("/app").
 		WithExec([]string{"npm", "install"}).
 		WithExec([]string{"npm", "link"}).
@@ -111,7 +111,7 @@ func (m *BlogCLI) RunTests(ctx context.Context) error {
 		From("ubuntu:22.04").
 		WithExec([]string{"apt-get", "update"}).
 		WithExec([]string{"apt-get", "install", "-y", "nodejs", "npm"}).
-		WithDirectory("/app", client.Host().Directory("../")).
+		WithDirectory("/app", client.Host().Directory(".")).
 		WithWorkdir("/app").
 		WithExec([]string{"npm", "install"}).
 		WithExec([]string{"npm", "test"})

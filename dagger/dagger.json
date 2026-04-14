@@ -1,0 +1,6 @@
+{
+  "name": "blog-cli",
+  "sdk": "go",
+  "source": ".",
+  "dependencies": []
+}

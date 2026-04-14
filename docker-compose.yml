@@ -3,7 +3,8 @@ version: '3.8'
 services:
   # blog-cli service
   blog-cli:
-    image: docker.io/yourusername/blog-cli:latest
+    build: .
+    image: blog-cli:local
     container_name: blog-cli-instance
     restart: unless-stopped
     labels:
