@@ -5,19 +5,17 @@ This setup enables automatic updates of blog-cli containers using Watchtower whe
 ## Architecture
 
 ```
-Commit → GitHub Actions + Dagger → Docker Hub → Watchtower → Updated Containers
+Commit → GitHub Actions + Dagger → GitHub Container Registry → Watchtower → Updated Containers
 ```
 
 ## Quick Start
 
-### 1. Setup Docker Hub Repository
+### 1. GitHub Container Registry Setup
 
 ```bash
-# Login to Docker Hub
-docker login
-
-# Update registry name in dagger/main.go and docker-compose.yml
-# Replace "yourusername/blog-cli" with your actual Docker Hub username
+# No separate login needed - uses GitHub authentication automatically
+# Registry URL: ghcr.io/awannaphasch2016/blog-cli
+# Authentication handled by GITHUB_TOKEN in GitHub Actions
 ```
 
 ### 2. Test Locally
@@ -60,7 +58,7 @@ dagger call build-local
 # Run tests
 dagger call run-tests
 
-# Build and push (requires Docker Hub login)
+# Build and push (uses GitHub Container Registry)
 dagger call build-and-push
 ```
 
@@ -90,7 +88,7 @@ docker run -d \
   --name blog-cli-instance \
   --restart unless-stopped \
   --label "com.centurylinklabs.watchtower.enable=true" \
-  docker.io/yourusername/blog-cli:latest \
+  ghcr.io/awannaphasch2016/blog-cli:latest \
   tail -f /dev/null
 
 # 3. Start Watchtower
@@ -121,10 +119,7 @@ docker exec blog-cli-instance blog --help
 
 ### Required Secrets
 
-Add these secrets to your GitHub repository:
-
-- `DOCKER_USERNAME` - Your Docker Hub username
-- `DOCKER_PASSWORD` - Your Docker Hub password or access token
+No additional secrets required! GitHub Container Registry uses the built-in `GITHUB_TOKEN` automatically.
 
 ### Workflow Triggers
 
@@ -141,7 +136,7 @@ The workflow runs on:
 docker logs watchtower
 
 # Manually pull latest image
-docker pull docker.io/yourusername/blog-cli:latest
+docker pull ghcr.io/awannaphasch2016/blog-cli:latest
 
 # Restart container with new image
 docker stop blog-cli-instance
@@ -149,7 +144,7 @@ docker run -d \
   --name blog-cli-instance \
   --restart unless-stopped \
   --label "com.centurylinklabs.watchtower.enable=true" \
-  docker.io/yourusername/blog-cli:latest
+  ghcr.io/awannaphasch2016/blog-cli:latest
 ```
 
 ### Watchtower Not Running
@@ -173,7 +168,7 @@ cd dagger
 dagger call build-local
 
 # Check GitHub Actions logs
-# Go to: https://github.com/yourusername/blog-cli/actions
+# Go to: https://github.com/awannaphasch2016/blog-cli/actions
 ```
 
 ## Rollback
@@ -186,10 +181,10 @@ docker stop watchtower
 
 # Revert to specific version
 docker stop blog-cli-instance
-docker pull docker.io/yourusername/blog-cli:COMMIT_HASH
+docker pull ghcr.io/awannaphasch2016/blog-cli:COMMIT_HASH
 docker run -d \
   --name blog-cli-instance \
-  docker.io/yourusername/blog-cli:COMMIT_HASH
+  ghcr.io/awannaphasch2016/blog-cli:COMMIT_HASH
 
 # Restart auto-updates
 docker start watchtower

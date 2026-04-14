@@ -65,7 +65,7 @@ cd dagger && dagger call build-local
 # On each server
 docker run -d --name blog-cli-instance \
   --label "com.centurylinklabs.watchtower.enable=true" \
-  docker.io/yourusername/blog-cli:latest
+  ghcr.io/awannaphasch2016/blog-cli:latest
 
 docker run -d --name watchtower \
   -v /var/run/docker.sock:/var/run/docker.sock \
@@ -111,7 +111,7 @@ docker run -d --name watchtower \
 1. Developer pushes code to main branch
 2. GitHub Actions triggers
 3. Dagger builds and tests container
-4. Container pushed to Docker Hub with 'latest' tag
+4. Container pushed to GitHub Container Registry with 'latest' tag
 5. Watchtower detects new image within 5 minutes
 6. Watchtower pulls new image and restarts containers
 7. All blog-cli instances now run latest version
@@ -128,8 +128,8 @@ docker run -d --name watchtower \
 
 ### 🚀 Next Steps
 
-1. **Update Docker Hub username** in `dagger/main.go` and `docker-compose.yml`
-2. **Add GitHub secrets** for Docker Hub authentication
+1. **Registry already configured** for GitHub Container Registry (ghcr.io)
+2. **No GitHub secrets needed** - uses built-in GITHUB_TOKEN
 3. **Test locally** with `./test-watchtower.sh`
 4. **Deploy to one server** for testing
 5. **Push a commit** and verify auto-update works

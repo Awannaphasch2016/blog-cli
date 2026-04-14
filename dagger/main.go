@@ -43,7 +43,7 @@ func (m *BlogCLI) BuildAndPush(ctx context.Context) (string, error) {
 
 	// Push with both latest and commit tags
 	commitHash := getGitCommit()
-	registry := "docker.io/yourusername/blog-cli"
+	registry := "ghcr.io/awannaphasch2016/blog-cli"
 
 	// Push with commit tag for versioning
 	_, err = container.Publish(ctx, fmt.Sprintf("%s:%s", registry, commitHash))
@@ -69,7 +69,7 @@ func (m *BlogCLI) TestContainer(ctx context.Context) error {
 	defer client.Close()
 
 	container := client.Container().
-		From("docker.io/yourusername/blog-cli:latest").
+		From("ghcr.io/awannaphasch2016/blog-cli:latest").
 		WithExec([]string{"blog", "--version"}).
 		WithExec([]string{"opencli", "--version"})
 
