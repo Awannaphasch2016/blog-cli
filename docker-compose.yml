@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # blog-cli service
+  blog-cli:
+    image: docker.io/yourusername/blog-cli:latest
+    container_name: blog-cli-instance
+    restart: unless-stopped
+    labels:
+      # Enable Watchtower monitoring for this container
+      - "com.centurylinklabs.watchtower.enable=true"
+    environment:
+      # Add any environment variables blog-cli might need
+      - NODE_ENV=production
+    ports:
+      - "8080:8080"
+    # Keep container running for testing
+    command: ["tail", "-f", "/dev/null"]
+
+  # Watchtower for auto-updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # Check for updates every 30 seconds (for testing)
+      - WATCHTOWER_POLL_INTERVAL=30
+      # Remove old images after updating
+      - WATCHTOWER_CLEANUP=true
+      # Don't update stopped containers
+      - WATCHTOWER_INCLUDE_STOPPED=false
+      # Only update containers with watchtower.enable=true label
+      - WATCHTOWER_LABEL_ENABLE=true
+      # Enable debug logging
+      - WATCHTOWER_DEBUG=true
+    command: --interval 30 --debug
+
+  # Optional: Portainer for Docker management UI
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    profiles:
+      - "management"  # Only start with: docker-compose --profile management up
+
+volumes:
+  portainer_data:
