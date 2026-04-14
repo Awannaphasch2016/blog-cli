@@ -29,7 +29,7 @@ jobs:
       - name: Run tests with Dagger
         run: |
           cd dagger
-          dagger call run-tests
+          dagger --workdir=.. call run-tests
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
       - name: Test the published container
         run: |
           cd dagger
-          dagger call test-container
+          dagger --workdir=.. call test-container
 
       - name: Create deployment summary
         run: |

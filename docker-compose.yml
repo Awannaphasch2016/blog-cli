@@ -3,8 +3,7 @@ version: '3.8'
 services:
   # blog-cli service
   blog-cli:
-    build: .
-    image: blog-cli:local
+    image: ghcr.io/awannaphasch2016/blog-cli:latest
     container_name: blog-cli-instance
     restart: unless-stopped
     labels:
@@ -14,7 +13,7 @@ services:
       # Add any environment variables blog-cli might need
       - NODE_ENV=production
     ports:
-      - "8080:8080"
+      - "8081:8080"
     # Keep container running for testing
     command: ["tail", "-f", "/dev/null"]
 
