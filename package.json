@@ -15,7 +15,8 @@
     "@supabase/supabase-js": "^2.101.1",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.1",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "serverless": "^3.38.0",
